@@ -1,17 +1,26 @@
-meme_dict = {
-            "CRINGE": "Garip ya da utandırıcı bir şey",
-            "LOL": "Komik bir şeye verilen cevap",
-            "ROFL": "bir şakaya karşılık cevap",
-            "SHEESH": "onaylamamak",
-            "CREEPY": "korkunç",
-            "AGGRO": "agresifleşmek/sinirlenmek",
-            }   
+import discord
 
-word = input("Anlamadığınız bir kelime yazın (hepsini büyük harflerle yazın!): ")
 
-if word in meme_dict.keys():
-    # Kelime eşleşiyorsa ne yapmalıyız?
-    print("kelimenin alnamı :", meme_dict.get(word))
-else:
-    # Kelime eşleşmiyorsa ne yapmalıyız?
-    print("hatalı kelime")
+class MyClient(discord.Client):
+    async def on_ready(self):
+        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print('------')
+
+    async def on_message(self, message):
+        if message.content.startswith('!deleteme'):
+            msg = await message.channel.send('I will delete myself now...')
+            await msg.delete()
+
+            # this also works
+            await message.channel.send('Goodbye in 3 seconds...', delete_after=3.0)
+
+    async def on_message_delete(self, message):
+        msg = f'{message.author} has deleted the message: {message.content}'
+        await message.channel.send(msg)
+
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = MyClient(intents=intents)
+client.run('token')
